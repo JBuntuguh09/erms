@@ -51,9 +51,7 @@ const getAll = catchAsync(async(req, res, next)=>{
         const id = req.params.id;
         const role = req.user.user_role;
     
-    if(role !== "admin"){
-        return next(new AppError("Only admins can call this api", 400));
-    }
+    
     const result = await customer.findAll({   
         where:{status: "Active"}, 
         include: [
