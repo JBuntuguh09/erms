@@ -11,6 +11,8 @@ const propertyRouter = require('./route/propertyRoute');
 const entityRouter = require('./route/entityRoute');
 const regionRouter = require('./route/regionRoute');
 const districtRouter = require('./route/districtRoute');
+const billingRouter = require('./route/billingRoute');
+const roleRouter = require('./route/roleRoute');
 const catchAsync = require("./utils/catchAsync");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controller/errorController");
@@ -30,6 +32,8 @@ app.use('/api/v1/property', propertyRouter)
 app.use('/api/v1/entity', entityRouter) 
 app.use('/api/v1/region', regionRouter) 
 app.use('/api/v1/district', districtRouter) 
+app.use('/api/v1/billing', billingRouter) 
+app.use('/api/v1/role', roleRouter) 
 
 app.use("*", catchAsync( async (req, res, next)=>{
     throw new AppError(`Route ${req.originalUrl} not found`, 404)

@@ -19,19 +19,62 @@ const generateWebToken=(payload)=>{
     })
 
 }
+
+const getUsers = catchAsync( async(req, res, next) =>{
+    try {
+        const users = await user.findAll({
+            where:{
+                user_status:"Active"
+            },
+            attributes: { exclude: ["password", "deletedAt"] },
+            include :[{
+                model:region,
+                as:"region",
+                attributes:["id", "name"]
+            },
+            {
+                model:district,
+                as:"district",
+                attributes:["id", "name"]
+            },
+            {
+                model:community,
+                as:"community",
+                attributes:["id", "name"]
+            }
+        ]
+        })
+
+       
+        if(!user){return next(new AppError("No user found", 400))};
+    
+        return res.status(201).json({
+            status:"Success",
+            message:"Users successfully retrieved",
+            data: users
+        })
+    } catch (error) {
+        return next(new AppError(error, 400));
+    }
+})
 const signUp = catchAsync( async(req, res, next) =>{
 
-  
-        const body = req.body;
+  try {
+    
+    const body = req.body;
     
     const newUser = await user.create({
         name: body.name,
         phone: body.phone,
         email: body.email,
-        user_role: body.user_role,
+        user_role_id: body.user_role_id,
         user_status: body.user_status,
         password: body.password,
         confirm_password: body.confirm_password,
+        access_level: body.access_level,
+        community_id: body.community_id,
+        district_id: body.district_id,
+        region_id: body.region_id
     })
 
     const result = newUser.toJSON();
@@ -44,10 +87,7 @@ const signUp = catchAsync( async(req, res, next) =>{
     })
 
     if(!result){
-        return res.status(400).json({
-            status: "error",
-            message: "Failed to create new user"
-        });
+        return next(new AppError("Failed to create new user", 400));
     }
 
     return res.status(201).json({
@@ -55,6 +95,9 @@ const signUp = catchAsync( async(req, res, next) =>{
         message:"New user successfully created",
         data: result
     })
+  } catch (error) {
+    return next(new AppError(error, 400));
+  }
     
 
 });
@@ -148,4 +191,4 @@ const authenticate = catchAsync(async (req, res, next)=>{
 })
 
 
-module.exports = { signUp, login, authenticate };
+module.exports = { signUp, login, authenticate, getUsers };

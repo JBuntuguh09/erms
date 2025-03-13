@@ -35,6 +35,7 @@ const insertCommunity= catchAsync(async(req, res, next)=>{
 
     const newComm = await community.create({
         name: body.name,
+        district_id: body.district_id,
         createdBy: id,
         updatedBy: id
     });
@@ -158,9 +159,16 @@ const searchCommunity= catchAsync(async(req, res, next)=>{
           includeConditions[0].include.push({
             model: region,
             as: "region",
-             where: { id: region_id },
+            where: { id: region_id },
             required: true, // Ensures filtering by region
           });
+        }else{
+            includeConditions[0].include.push({
+                model: region,
+                as: "region",
+                //  where: { id: region_id },
+                required: true, // Ensures filtering by region
+              });
         }
     
         // Query communities with filtering

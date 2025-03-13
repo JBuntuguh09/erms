@@ -5,6 +5,7 @@ const {
 } = require('sequelize');
 const sequelize = require('../../config/database');
 const AppError = require('../../utils/appError');
+const role = require('./role');
 
 module.exports = sequelize.define('user', {
   id: {
@@ -62,18 +63,18 @@ module.exports = sequelize.define('user', {
       }
     }
   },
-  user_role: {
-    type: DataTypes.ENUM("user", "admin"),
-    allowNull:false,
-    validate:{
-      notEmpty:{
-        msg:"User role can not be empty"
-      },
-      notNull:{
-        msg:"User role canot be null"
-      }
+  user_role_id: {
+    type: DataTypes.INTEGER,
+    allowNull:true,
+    references:{
+      model:role,
+      key:"id"
     }
   },
+  access_level: {
+    type: DataTypes.STRING,
+    allowNull: true
+  }, 
   region_id: {
     type: DataTypes.INTEGER
   },

@@ -17,6 +17,15 @@ module.exports = sequelize.define('billings', {
       key: 'id'
     }
   },
+  action_id: {
+    type: DataTypes.INTEGER
+  },
+  type: {
+    type: DataTypes.STRING
+  },
+  description: {
+    type: DataTypes.STRING(600)
+  },
   owner_name: {
     type: DataTypes.STRING
   },
@@ -46,7 +55,12 @@ module.exports = sequelize.define('billings', {
     type: DataTypes.STRING
   },
   status: {
-    type: DataTypes.ENUM(["Active", "Inactive"])
+    type: DataTypes.ENUM(["Active", "Inactive"]),
+    defaultValue:"Active"
+  },
+  bill_status: {
+    type: DataTypes.STRING,
+    defaultValue:"Pending"
   },
   remarks: {
     type: DataTypes.STRING(500)

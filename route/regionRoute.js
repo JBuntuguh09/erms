@@ -16,7 +16,7 @@ router.get("/:id", authenticate, getRegion);
 router.get("/:id/districts", authenticate, getAllRegionsAndDistrictbyRegionId);
 
 // Create a new region
-router.post("/", authenticate, insertRegion);
+router.post("/new", authenticate, insertRegion);
 
 // Update a region
 router.put("/", authenticate, updateRegion);

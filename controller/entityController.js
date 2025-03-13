@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+const { and } = require("sequelize");
 const community = require("../db/models/community");
 const customer = require("../db/models/customer");
 const customer_entity = require("../db/models/customer_entity");
@@ -7,6 +9,8 @@ const revenue_streams = require("../db/models/revenue_streams");
 const user = require("../db/models/user");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
+
+const moment = require("moment");
 
 // Property should have many CustomerProperty entries
 entity.hasMany(customer_entity, { foreignKey: "entity_id", as: "owners" });
@@ -128,6 +132,66 @@ const getAllEntities = async (req, res) => {
       return res.status(400).json({ status: "error", message: error.message });
     }
   };
+  function parseDateString(dateString) {
+    const [day, month, year] = dateString.split('/');
+    return new Date(year, month - 1, day); // Months are zero-based
+  }
+  const getAllEntitiesByLimit = async (req, res, next) => {
+    try {
+      const {start_date, end_date} = req.query
+      console.log(start_date, end_date)
+      // Parse the date strings
+      const parsedStartDate = new Date(start_date);
+      const parsedEndDate = new Date(end_date);
+
+    // Set start_date to the beginning of the day
+    parsedStartDate.setHours(0, 0, 0, 0);
+
+    // Set end_date to the end of the day
+    parsedEndDate.setHours(23, 59, 59, 999);
+
+    console.log(parsedStartDate, parsedEndDate)
+
+      const entities = await entity.findAll({
+        where:and({status: "Active"},
+        {registration_date: {
+          [Op.between]: [parsedStartDate, parsedEndDate],
+        },}
+        ),
+        include: [
+          {
+            model: customer_entity,
+            as: "owners",
+            include: [{ model: customer, as: "customer",  attributes: ["id", "name"] }],
+            attributes: ["id", "role"]
+          },
+          {
+            model:community,
+            as:'community',
+            attributes: ["id", "name"],
+          },
+          {
+            model:user,
+            as:'user',
+            attributes: ["id", "name"],
+          },
+          {
+            model:revenue_streams,
+            as:'revenue_streams',
+            attributes: ["id", "name"],
+          }
+        ]
+      });
+  
+      return res.status(200).json({
+        status: "Success",
+        message: "Entities retrieved successfully",
+        data: entities,
+      });
+    } catch (error) {
+      return next(new AppError(error, 400));
+    }
+  };
 
   const getEntityById = catchAsync(async (req, res, next) => {
     try {
@@ -175,5 +239,16 @@ const getAllEntities = async (req, res) => {
     }
   });
 
+  const getCurrentDate=()=>{
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(today.getDate()).padStart(2, '0');
 
-module.exports = {insertEntity, updateEntity, getAllEntities, getEntityById}
+    const formattedDate = `${year}-${month}-${day}`;
+
+    return formattedDate;
+  }
+
+
+module.exports = {insertEntity, updateEntity, getAllEntities, getEntityById, getAllEntitiesByLimit}

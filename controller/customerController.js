@@ -104,7 +104,7 @@ const searchAll = catchAsync(async (req, res, next) => {
 
         console.log(query)
         // Ensure the search query is a string and not passed as an integer
-    if (!query || typeof query !== "string") {
+    if ( typeof query !== "string") {
         return res.status(400).json({
           status: "error",
           message: "Invalid search query",

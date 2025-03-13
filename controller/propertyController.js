@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+const { and } = require("sequelize");
 const community = require("../db/models/community");
 const customer = require("../db/models/customer");
 const customer_property = require("../db/models/customer_property");
@@ -120,6 +122,44 @@ const getAllProperties = async (req, res) => {
       return res.status(400).json({ status: "error", message: error.message });
     }
   };
+const getAllPropertiesLimit = async (req, res) => {
+    try {
+      const {start_date, end_date} = req.params
+      const properties = await property.findAll({
+        where:and({status: "Active"},
+          {
+            registration_date:Op.between(start_date, end_date)
+          }
+        ),
+        include: [
+          {
+            model: customer_property,
+            as: "owners",
+            include: [{ model: customer, as: "customer",  attributes: ["id", "name"] }],
+            attributes: ["id", "role"]
+          },
+          {
+            model:community,
+            as:'community',
+            attributes: ["id", "name"],
+          },
+          {
+            model:user,
+            as:'user',
+            attributes: ["id", "name"],
+          }
+        ]
+      });
+  
+      return res.status(200).json({
+        status: "Success",
+        message: "Properties retrieved successfully",
+        data: properties,
+      });
+    } catch (error) {
+      return res.status(400).json({ status: "error", message: error.message });
+    }
+  };
 
   const getPropertyById = catchAsync(async (req, res, next) => {
     try {
@@ -163,4 +203,4 @@ const getAllProperties = async (req, res) => {
   });
 
 
-module.exports = {insertProperty, updateProperty, getAllProperties, getPropertyById}
+module.exports = {insertProperty, updateProperty, getAllProperties, getPropertyById, getAllPropertiesLimit}

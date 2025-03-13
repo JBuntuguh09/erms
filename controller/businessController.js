@@ -1,3 +1,5 @@
+const { Op } = require("sequelize");
+const { and } = require("sequelize");
 const business = require("../db/models/business");
 const community = require("../db/models/community");
 const customer = require("../db/models/customer");
@@ -171,6 +173,79 @@ const getAllBusiness = catchAsync(async(req, res, next)=>{
         data: result
     })
 });
+function parseDateString(dateString) {
+    const [day, month, year] = dateString.split('/');
+    return new Date(year, month - 1, day); // Months are zero-based
+  }
+const getAllBusinessByLimit = catchAsync(async(req, res, next)=>{
+    try {
+        const {start_date, end_date} = req.query
+        console.log(start_date, end_date)
+        var sDate = start_date
+        var eDate = end_date
+        if(sDate.includes("/")){
+            sDate = parseDateString(sDate)
+            eDate = parseDateString(eDate)
+        }
+        
+        console.log(sDate, eDate)
+
+
+      // Parse the date strings
+      const parsedStartDate = new Date(sDate);
+      const parsedEndDate = new Date(eDate);
+
+    // Set start_date to the beginning of the day
+    parsedStartDate.setHours(0, 0, 0, 0);
+
+    // Set end_date to the end of the day
+    parsedEndDate.setHours(23, 59, 59, 999);
+    console.log(parsedStartDate, parsedEndDate)
+    const result = await business.findAll({
+        where:and({status: "Active"},
+        {registration_date: {
+          [Op.between]: [parsedStartDate, parsedEndDate],
+        },}
+        ),
+        include:[{
+            model:user,
+            as: 'user',
+            attributes:["id", "name"]
+        },{
+            model:community,
+            as: 'community',
+            attributes:["id", "name"]
+        },
+        {
+            model:customer_business,
+            as: 'owners',
+            include:[{model:customer, as:"customer", attributes:["id", "name"]}],
+            attributes:["id", "role"],
+            
+        },
+        {
+            model:revenue_streams,
+            as: "revenue_streams",
+            attributes:["id", "name"]
+        }
+    ]
+    });
+
+    if(!result){
+        return next(new AppError("Failed to get all businesses", 400));
+        
+    }
+
+    return res.status(200).json({
+        status:"Success",
+        message:"Get all businesses",
+        data: result
+    })
+    } catch (error) {
+        return next(new AppError(error, 400));
+        
+    }
+});
 
 const getBusiness = catchAsync(async(req, res, next)=>{
     const id = req.params.id
@@ -254,4 +329,6 @@ const updateBusiness = catchAsync(async(req, res, next)=>{
     }
 });
 
-module.exports = {newBusiness, getAllBusiness, getBusiness, getMyBusiness, updateBusiness}
+
+
+module.exports = {newBusiness, getAllBusiness, getBusiness, getMyBusiness, updateBusiness, getAllBusinessByLimit}
