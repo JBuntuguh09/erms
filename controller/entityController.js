@@ -139,10 +139,19 @@ const getAllEntities = async (req, res) => {
   const getAllEntitiesByLimit = async (req, res, next) => {
     try {
       const {start_date, end_date} = req.query
-      console.log(start_date, end_date)
+     
+      var sDate = start_date
+        var eDate = end_date
+        if(sDate.includes("/")){
+            sDate = parseDateString(sDate)
+            eDate = parseDateString(eDate)
+        }
+
+        console.log(sDate, eDate)
       // Parse the date strings
-      const parsedStartDate = new Date(start_date);
-      const parsedEndDate = new Date(end_date);
+      const parsedStartDate = new Date(sDate);
+      const parsedEndDate = new Date(eDate);
+
 
     // Set start_date to the beginning of the day
     parsedStartDate.setHours(0, 0, 0, 0);
@@ -150,7 +159,7 @@ const getAllEntities = async (req, res) => {
     // Set end_date to the end of the day
     parsedEndDate.setHours(23, 59, 59, 999);
 
-    console.log(parsedStartDate, parsedEndDate)
+    
 
       const entities = await entity.findAll({
         where:and({status: "Active"},
@@ -158,6 +167,7 @@ const getAllEntities = async (req, res) => {
           [Op.between]: [parsedStartDate, parsedEndDate],
         },}
         ),
+        order:[["createdAt", "DESC"]],
         include: [
           {
             model: customer_entity,

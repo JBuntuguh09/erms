@@ -13,6 +13,9 @@ module.exports = sequelize.define('customer', {
   name: {
     type: DataTypes.STRING
   },
+  customer_id: {
+    type: DataTypes.STRING
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: false,

@@ -122,15 +122,34 @@ const getAllProperties = async (req, res) => {
       return res.status(400).json({ status: "error", message: error.message });
     }
   };
+  function parseDateString(dateString) {
+    const [day, month, year] = dateString.split('/');
+    return new Date(year, month - 1, day); // Months are zero-based
+  }
 const getAllPropertiesLimit = async (req, res) => {
     try {
       const {start_date, end_date} = req.params
+      var sDate = start_date
+      var eDate = end_date
+      if(sDate.includes("/")){
+          sDate = parseDateString(sDate)
+          eDate = parseDateString(eDate)
+      }
+      
+      console.log(sDate, eDate)
+
+
+    // Parse the date strings
+    const parsedStartDate = new Date(sDate);
+    const parsedEndDate = new Date(eDate);
+
       const properties = await property.findAll({
         where:and({status: "Active"},
           {
-            registration_date:Op.between(start_date, end_date)
+            registration_date:Op.between(parsedStartDate, parsedEndDate)
           }
         ),
+        order:[["createdAt", "DESC"]],
         include: [
           {
             model: customer_property,

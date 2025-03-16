@@ -4,10 +4,14 @@ const customer = require("../db/models/customer");
 const user = require("../db/models/user");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
-
+const { Op } = require("sequelize");
+const region = require("../db/models/region");
+const district = require("../db/models/district");
 
 // Define associations
 customer.belongsTo(community, { foreignKey: 'community_id', as: 'community' });
+customer.belongsTo(district, { foreignKey: 'district_id', as: 'district' });
+customer.belongsTo(region, { foreignKey: 'region_id', as: 'region' });
 customer.belongsTo(user, {foreignKey: 'user_id', as: 'user'});
 const insertCustomer=catchAsync(async(req, res, next)=>{
     try {
@@ -19,6 +23,8 @@ const insertCustomer=catchAsync(async(req, res, next)=>{
             phone: body.phone,
             email: body.email,
             community_id: body.community_id,
+            district_id: body.district_id,
+            region_id: body.region_id,
             createdBy: id,
             updatedBy: id
         })
@@ -60,6 +66,14 @@ const getAll = catchAsync(async(req, res, next)=>{
                     as: 'community'    // Use the alias from the Sequelize association
                 },
                 {
+                    model: district,  // Assuming `community` is associated with `customer`
+                    as: 'district'    // Use the alias from the Sequelize association
+                },
+                {
+                    model: region,  // Assuming `community` is associated with `customer`
+                    as: 'region'    // Use the alias from the Sequelize association
+                },
+                {
                     model: user,  // Assuming `community` is associated with `customer`
                     as: 'user'    // Use the alias from the Sequelize association
                 },
@@ -92,13 +106,15 @@ const getAll = catchAsync(async(req, res, next)=>{
 })
 
 
-const { Op } = require("sequelize");
+
 
 const searchAll = catchAsync(async (req, res, next) => {
     try {
-        console.log("mmmmmmmmmmmmmmmmm")
+        
         const query = req.query.q || ""; // Get search term from query params
         const role = req.user.user_role;
+        const { region_id, district_id, community_id } = req.query;
+
 
         console.log(query)
         // Ensure the search query is a string and not passed as an integer
@@ -110,7 +126,11 @@ const searchAll = catchAsync(async (req, res, next) => {
       }
 
         let whereCondition = { status: "Active" }; // Default filter
-
+        
+        if (region_id) whereCondition.region_id = region_id;
+        if (district_id) whereCondition.district_id = district_id;
+        if (community_id) whereCondition.community_id = community_id;
+    
         // If a search term is provided, apply filtering
         if (query) {
             whereCondition[Op.or] = [
@@ -126,6 +146,14 @@ const searchAll = catchAsync(async (req, res, next) => {
                 {
                     model: community,
                     as: "community"
+                },
+                {
+                    model: district,  // Assuming `community` is associated with `customer`
+                    as: 'district'    // Use the alias from the Sequelize association
+                },
+                {
+                    model: region,  // Assuming `community` is associated with `customer`
+                    as: 'region'    // Use the alias from the Sequelize association
                 },
                 {
                     model: user,
