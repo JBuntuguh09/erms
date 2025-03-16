@@ -10,6 +10,9 @@ module.exports = sequelize.define('property', {
     primaryKey: true,
     type: DataTypes.INTEGER
   },
+  property_id: {
+    type: DataTypes.STRING
+  },
   house_no: {
     type: DataTypes.STRING
   },

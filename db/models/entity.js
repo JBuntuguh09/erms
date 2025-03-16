@@ -10,6 +10,9 @@ module.exports = sequelize.define('entity', {
     primaryKey: true,
     type: DataTypes.INTEGER
   },
+  entity_id: {
+    type: DataTypes.STRING
+  },
   entity_description: {
     type: DataTypes.STRING(500)
   },

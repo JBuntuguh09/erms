@@ -1,20 +1,24 @@
 'use strict';
 const {
-  Model, DataTypes
+  Model
 } = require('sequelize');
 const sequelize = require('../../config/database');
-module.exports = sequelize.define('revenue_streams',{
+module.exports = sequelize.define('business_types', {
   id: {
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
-    type: DataTypes.INTEGER
+    type: Sequelize.INTEGER
   },
   name: {
-    type: DataTypes.STRING
+    type: Sequelize.STRING
   },
-  description: {
+  description:{
     type: DataTypes.STRING(500)
+  },
+  status: {
+    type: Sequelize.STRING,
+    defaultValue:"Active"
   },
   createdAt: {
     allowNull: false,
@@ -39,18 +43,9 @@ module.exports = sequelize.define('revenue_streams',{
       model:'user',
       key: 'id'
     }
-  },
-  region_id: {
-    type: DataTypes.INTEGER
-  },
-  district_id: {
-    type: DataTypes.INTEGER
-  },
-  community_id: {
-    type: DataTypes.INTEGER
   }
-}, {
-  tableName:'revenue_streams',
-  modelName:'revenue_streams',
+},{
+  modelName:'business_type',
+  tableName:'business_type',
   timestamps:true
-})
+});

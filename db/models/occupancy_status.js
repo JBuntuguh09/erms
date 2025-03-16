@@ -3,7 +3,7 @@ const {
   Model, DataTypes
 } = require('sequelize');
 const sequelize = require('../../config/database');
-module.exports = sequelize.define('revenue_streams',{
+module.exports = sequelize.define('occupancy_status', {
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -14,7 +14,7 @@ module.exports = sequelize.define('revenue_streams',{
     type: DataTypes.STRING
   },
   description: {
-    type: DataTypes.STRING(500)
+    type: DataTypes.STRING
   },
   createdAt: {
     allowNull: false,
@@ -50,7 +50,8 @@ module.exports = sequelize.define('revenue_streams',{
     type: DataTypes.INTEGER
   }
 }, {
-  tableName:'revenue_streams',
-  modelName:'revenue_streams',
+  tableName:"occupancy_status",
+  modelName:"occupancy_status",
   timestamps:true
-})
+});
+

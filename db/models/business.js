@@ -10,6 +10,9 @@ module.exports = sequelize.define('business', {
     primaryKey: true,
     type: DataTypes.INTEGER
   },
+  business_id: {
+    type: DataTypes.STRING
+  },
   business_name: {
     type: DataTypes.STRING
   },

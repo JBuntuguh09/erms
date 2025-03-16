@@ -80,7 +80,10 @@ const updateBill=catchAsync(async(req, res, next)=>{
        
       }
 })
-
+function parseDateString(dateString) {
+  const [day, month, year] = dateString.split('/');
+  return new Date(year, month - 1, day); // Months are zero-based
+}
 
 // Get all properties
 const getBillings = async (req, res, next) => {
@@ -88,11 +91,25 @@ const getBillings = async (req, res, next) => {
     const {start_date, end_date} = req.query
     // Fetch all billings
     console.log(start_date, end_date)
+    var sDate = start_date
+        var eDate = end_date
+        if(sDate.includes("/")){
+            sDate = parseDateString(sDate)
+            eDate = parseDateString(eDate)
+        }
+        
+        console.log(sDate, eDate)
+
+
+      // Parse the date strings
+      const parsedStartDate = new Date(sDate);
+      const parsedEndDate = new Date(eDate);
+
     const billings = await billing.findAll(
       {
         where: {
           bill_date: {
-            [Op.between]: [start_date, end_date],
+            [Op.between]: [parsedStartDate, parsedEndDate],
           },
         },
         order:[["createdAt", "DESC"]]
