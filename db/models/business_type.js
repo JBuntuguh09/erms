@@ -1,6 +1,6 @@
 'use strict';
 const {
-  Model
+  Model, DataTypes
 } = require('sequelize');
 const sequelize = require('../../config/database');
 module.exports = sequelize.define('business_types', {
@@ -8,17 +8,25 @@ module.exports = sequelize.define('business_types', {
     allowNull: false,
     autoIncrement: true,
     primaryKey: true,
-    type: Sequelize.INTEGER
+    type: DataTypes.INTEGER
   },
   name: {
-    type: Sequelize.STRING
+    type: DataTypes.STRING
   },
   description:{
     type: DataTypes.STRING(500)
   },
+  rate: {
+    type: DataTypes.STRING,
+    defaultValue:"0"
+  },
   status: {
-    type: Sequelize.STRING,
+    type: DataTypes.STRING,
     defaultValue:"Active"
+  },
+  type: {
+    type: DataTypes.STRING,
+    defaultValue:"Fixed"
   },
   createdAt: {
     allowNull: false,

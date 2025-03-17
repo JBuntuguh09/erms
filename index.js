@@ -40,6 +40,7 @@ app.use('/api/v1/role', roleRouter)
 app.use('/api/v1/dashboard', dashRouter) 
 app.use('/api/v1/occupancy-status', occupancyRouter) 
 app.use('/api/v1/property-type', propertyTypeRouter) 
+app.use('/api/v1/business-type', propertyTypeRouter) 
 
 app.use("*", catchAsync( async (req, res, next)=>{
     throw new AppError(`Route ${req.originalUrl} not found`, 404)
@@ -49,7 +50,7 @@ app.use(globalErrorHandler);
 
 
 const Port = process.env.APP_PORT || 4000
-console.log(Port)
+
 
 app.listen(Port, ()=> {
     console.log(`listening to port ${Port}`)

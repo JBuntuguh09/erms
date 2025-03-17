@@ -21,7 +21,16 @@ module.exports = sequelize.define('property_type', {
     type: DataTypes.STRING
   },
   rate: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING,
+    defaultValue:"0"
+  },
+  status: {
+    type: DataTypes.STRING,
+    defaultValue:"Active"
+  },
+  type: {
+    type: DataTypes.STRING,
+    defaultValue:"Fixed"
   },
   description:{
     type: DataTypes.STRING(500)
