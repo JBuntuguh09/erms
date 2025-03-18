@@ -27,25 +27,18 @@ const newBusiness = catchAsync(async(req, res, next)=>{
         const data = req.body;
         const id = req.user.id;
         const owner = req.body.owner
+        // const { body, user } = req;
+        const {  ...occData } = data;
+        
+        occData.createdBy = id;
+        occData.updatedBy = id;
+        occData.registration_date = data.registration_date || new Date()
        
         if(owner === undefined || owner.length < 1){
             return next(new AppError("Add a business owner", 400));
         }
         
-        const newBusiness = await business.create({
-            business_name: data.business_name,
-            business_type: data.business_type,
-            account_number: data.account_number,
-            email: data.email,
-            phone: data.phone,
-            community_id: data.community_id,
-            revenue_streams_id: data.revenue_streams_id,
-            gpsLocation: data.gpsLocation,
-            status: data.status, // Must be either "Active" or "Inactive"
-            registration_date: data.registration_date || new Date(), // Set current date
-            createdBy: id,
-            updatedBy: id
-        });
+        const newBusiness = await business.create(occData);
 
         const result = newBusiness.toJSON();
     
@@ -180,7 +173,7 @@ function parseDateString(dateString) {
 const getAllBusinessByLimit = catchAsync(async(req, res, next)=>{
     try {
         const {start_date, end_date} = req.query
-        console.log(start_date, end_date)
+       
         var sDate = start_date
         var eDate = end_date
         if(sDate.includes("/")){

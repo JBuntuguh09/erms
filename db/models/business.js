@@ -19,6 +19,9 @@ module.exports = sequelize.define('business', {
   business_type: {
     type: DataTypes.STRING
   },
+  business_type_id: {
+    type: DataTypes.INTEGER
+  },
   account_number: {
     type: DataTypes.STRING
   },
@@ -34,12 +37,16 @@ module.exports = sequelize.define('business', {
     type: DataTypes.INTEGER,
     allowNull:false,
     references: {
-      model:'user',
+      model:'community',
       key: 'id'
     }
   },
   revenue_streams_id: {
     type: DataTypes.INTEGER,
+    allowNull:true
+  },
+  revenue_stream: {
+    type: DataTypes.STRING,
     allowNull:true
   },
   gpsLocation: {
