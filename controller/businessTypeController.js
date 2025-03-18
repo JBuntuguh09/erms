@@ -67,12 +67,12 @@ const searchAll = catchAsync(async (req, res, next) => {
 
         if (!result || result.length === 0) {
            
-            return next(new AppError("No matching property types found", 400));
+            return next(new AppError("No matching business types found", 400));
         }
 
         return res.status(200).json({
             status: "Success",
-            message: "Retrieved property types successfully",
+            message: "Retrieved business types successfully",
             data: result
         });
     } catch (error) {
@@ -92,14 +92,14 @@ const insertData=catchAsync(async(req, res, next)=>{
         
         const nData = await business_type.create(occData);
         if (!nData) {
-            return next(new AppError("Failed to create new occupancy status", 400));
+            return next(new AppError("Failed to create new business type", 400));
           
         }
 
     
         return res.status(201).json({
           status: "Success",
-          message: "New property type successfully created",
+          message: "New business type successfully created",
           data: nData,
         });
       } catch (error) {

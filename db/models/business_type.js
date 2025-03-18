@@ -51,6 +51,15 @@ module.exports = sequelize.define('business_types', {
       model:'user',
       key: 'id'
     }
+  },
+  region_id: {
+    type: DataTypes.INTEGER
+  },
+  district_id: {
+    type: DataTypes.INTEGER
+  },
+  community_id: {
+    type: DataTypes.INTEGER
   }
 },{
   modelName:'business_type',

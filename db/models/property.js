@@ -28,7 +28,7 @@ module.exports = sequelize.define('property', {
     type: DataTypes.INTEGER,
     allowNull:false,
     references: {
-      model:'user',
+      model:'community',
       key: 'id'
     }
   },
@@ -36,8 +36,16 @@ module.exports = sequelize.define('property', {
     type: DataTypes.STRING,
     allowNull:true
   },
+  property_type_id: {
+    type: DataTypes.INTEGER,
+    allowNull:true
+  },
   occupancy_status: {
     type: DataTypes.STRING,
+    allowNull:true
+  },
+  occupancy_status_id: {
+    type: DataTypes.INTEGER,
     allowNull:true
   },
   property_value: {
@@ -50,6 +58,10 @@ module.exports = sequelize.define('property', {
   },
   revenue_streams_id: {
     type: DataTypes.INTEGER,
+    allowNull:true
+  },
+  revenue_stream: {
+    type: DataTypes.STRING,
     allowNull:true
   },
   remarks: {
