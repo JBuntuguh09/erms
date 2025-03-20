@@ -111,6 +111,9 @@ module.exports = sequelize.define('billings', {
       model:'user',
       key: 'id'
     }
+  },
+  customer_code:{
+    type: DataTypes.STRING
   }
 }, {
   modelName:'billings',
