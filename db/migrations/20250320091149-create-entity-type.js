@@ -1,28 +1,72 @@
 'use strict';
+
+const { DataTypes } = require('sequelize');
+const sequelize = require('../../config/database');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('entity_types', {
+  async up(queryInterface) {
+    await queryInterface.createTable('entity_type', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: DataTypes.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: DataTypes.STRING
+      },
+      rate: {
+        type: DataTypes.STRING,
+        defaultValue:"0"
+      },
+      status: {
+        type: DataTypes.STRING,
+        defaultValue:"Active"
+      },
+      type: {
+        type: DataTypes.STRING,
+        defaultValue:"Fixed"
+      },
+      description:{
+        type: DataTypes.STRING(500)
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: DataTypes.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: DataTypes.DATE
+      },
+      createdBy: {
+        allowNull: true,
+        type: DataTypes.INTEGER,
+        references: {
+          model:'user',
+          key: 'id'
+        }
+      },
+      updatedBy: {
+        allowNull: true,
+        type: DataTypes.INTEGER,
+        references: {
+          model:'user',
+          key: 'id'
+        }
+      },
+      region_id: {
+        type: DataTypes.INTEGER
+      },
+      district_id: {
+        type: DataTypes.INTEGER
+      },
+      community_id: {
+        type: DataTypes.INTEGER
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('entity_types');
+    await queryInterface.dropTable('entity_type');
   }
 };

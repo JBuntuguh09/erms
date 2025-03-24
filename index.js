@@ -15,6 +15,7 @@ const billingRouter = require('./route/billingRoute');
 const occupancyRouter = require('./route/occupancyRoute');
 const propertyTypeRouter = require('./route/propertyTypeRoute');
 const businessTypeRouter = require('./route/businessTypeRoute');
+const entityTypeRouter = require('./route/entityTypeRoute');
 const roleRouter = require('./route/roleRoute');
 const dashRouter = require('./route/dashRoute');
 const catchAsync = require("./utils/catchAsync");
@@ -42,6 +43,7 @@ app.use('/api/v1/dashboard', dashRouter)
 app.use('/api/v1/occupancy-status', occupancyRouter) 
 app.use('/api/v1/property-type', propertyTypeRouter) 
 app.use('/api/v1/business-type', businessTypeRouter) 
+app.use('/api/v1/entity-type', entityTypeRouter) 
 
 app.use("*", catchAsync( async (req, res, next)=>{
     throw new AppError(`Route ${req.originalUrl} not found`, 404)
