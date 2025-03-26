@@ -13,6 +13,7 @@ const property_type = require('../db/models/property_type');
 const community = require("../db/models/community");
 const customer = require("../db/models/customer");
 const customer_business = require("../db/models/customer_business");
+const customer_property = require("../db/models/customer_property");
 const entity = require("../db/models/entity");
 const property = require("../db/models/property");
 const revenue_streams = require("../db/models/revenue_streams");
@@ -28,6 +29,8 @@ const catchAsync = require("../utils/catchAsync");
 // customer_business.belongsTo(customer, { foreignKey: "customer_id", as: "customer" });
 // customer.hasMany(customer_business, { foreignKey: "customer_id" });
 
+//business.hasMany(customer_business, { foreignKey: "business_id", as: "nowners" });
+//property.hasMany(customer_property, { foreignKey: "property_id", as: "property_owners" });
 // Define associations
 billing.belongsTo(community, {
   foreignKey: 'comunity_id',
@@ -279,6 +282,18 @@ const getUnBilledBusiness = catchAsync(async (req, res, next) => {
           {
             model:business_type,
             as:"businesstype"
+          },
+          {
+            model: community,
+            as: 'community',
+            attributes: ["id", "name"],
+          },
+          {
+              model:customer_business,
+              as: 'owners',
+              include:[{model:customer, as:"customer", attributes:["id", "name", "customer_id"]}],
+              attributes:["id", "role"],
+              
           }
       ]
     });
@@ -319,6 +334,17 @@ const getUnBilledProperty = catchAsync(async (req, res, next) => {
           {
             model:property_type,
             as:"propertytype"
+          },{
+            model: community,
+            as: 'community',
+            attributes: ["id", "name"],
+          },
+          {
+              model:customer_business,
+              as: 'owners',
+              include:[{model:customer, as:"customer", attributes:["id", "name", "customer_id"]}],
+              attributes:["id", "role"],
+              
           }
       ]
     });
@@ -350,7 +376,19 @@ const getUnBilledEntity = catchAsync(async (req, res, next) => {
         id: {
           [Op.notIn]: subquery
         }
-      }
+      },
+      include:[{
+        model: community,
+        as: 'community',
+        attributes: ["id", "name"],
+      },
+      {
+          model:customer_business,
+          as: 'owners',
+          include:[{model:customer, as:"customer", attributes:["id", "name", "customer_id"]}],
+          attributes:["id", "role"],
+          
+      }]
     });
 
     return res.status(200).json({
@@ -365,34 +403,36 @@ const getUnBilledEntity = catchAsync(async (req, res, next) => {
   }
 });
 
-const insertUnpaidBill = catchAsync(async (req) => {
+const insertUnpaidBill = catchAsync(async (req, res, next) => {
   try {
-    const {
-      body,
-      user
-    } = req;
-    const {
-      bill_date,
-      ...billData
-    } = body;
+    const {body,user} = req;
+    //const {bill_date,...billData} = body;
 
+    const result =[]
+    for(var a=0; a<body.length;a++){
 
-    billData.createdBy = user.id;
-    billData.updatedBy = user.id;
-    billData.bill_date = getCurrentDate();
+      var hash = body[a]
+      hash.createdBy = user.id;
+      hash.updatedBy = user.id;
+      hash.bill_date = getCurrentDate();
 
-    const newBill = await billing.create(billData);
-    if (!newBill) {
-      return next(new AppError("Failed to create new bill", 400));
-
+      const db = await billing.create(hash)
+      result.push(db)
     }
 
+    if(result.length ===0){
+      return next(new AppError("No bills created", 400))
+    }
 
     return res.status(201).json({
-      status: "Success",
-      message: "New bill successfully created",
-      data: newBill.toJSON(),
-    });
+      status:"Success",
+      message:"New bills successfully created",
+      data: result
+  })
+
+    
+
+    
   } catch (error) {
     return next(new AppError(error.message, 400));
   }
@@ -407,4 +447,5 @@ module.exports = {
   getUnBilledBusiness,
   getUnBilledProperty,
   getUnBilledEntity,
+  insertUnpaidBill
 }

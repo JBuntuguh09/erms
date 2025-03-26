@@ -16,6 +16,12 @@ module.exports = sequelize.define('entity', {
   entity_description: {
     type: DataTypes.STRING(500)
   },
+  entity_type: {
+    type: DataTypes.STRING
+  },
+  entity_type_id: {
+    type: DataTypes.INTEGER
+  },
 
   email: {
     type: DataTypes.STRING,
@@ -45,7 +51,7 @@ module.exports = sequelize.define('entity', {
     allowNull:true
   },
   status: {
-    type: DataTypes.ENUM("Active, Inactive"),
+    type: DataTypes.ENUM("Active", "Inactive"),
     allowNull:false
   },
   registration_date: {

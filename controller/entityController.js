@@ -64,7 +64,7 @@ const insertEntity=catchAsync(async(req, res, next)=>{
     
         return res.status(201).json({
           status: "Success",
-          message: "New entity successfully registered",
+          message: "New entity successfully created",
           data: { ...newEntity.toJSON(), owner: newOwners },
         });
       } catch (error) {
