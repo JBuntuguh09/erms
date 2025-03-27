@@ -13,10 +13,16 @@ const getDash = catchAsync(async (req, res, next) => {
 
     // Base where clause
     const whereClause = { status: "Active" };
+    const whereBillClause = { status: "Active" };
 
     if (region_id) whereClause.region_id = region_id;
     if (district_id) whereClause.district_id = district_id;
     if (community_id) whereClause.community_id = community_id;
+   
+   
+    if (region_id) whereBillClause.region_id = region_id;
+    if (district_id) whereBillClause.district_id = district_id;
+    if (community_id) whereBillClause.comunity_id = community_id;
 
     // Parse the date strings
     const parsedStartDate = new Date(start_date);
@@ -40,7 +46,7 @@ const getDash = catchAsync(async (req, res, next) => {
     const totalPending = await billing.findAll({
       attributes: ["id", "bill_amount", "bill_date"], // Fetch only required fields
       where: {
-        ...whereClause,
+        ...whereBillClause,
         bill_date: { [Op.between]: [start_date, end_date] },
         bill_status:"Pending"
       }, 
@@ -49,7 +55,7 @@ const getDash = catchAsync(async (req, res, next) => {
     const totalValidated = await billing.findAll({
       attributes: ["id", "bill_amount", "bill_date"], // Fetch only required fields
       where: {
-        ...whereClause,
+        ...whereBillClause,
         bill_date: { [Op.between]: [start_date, end_date] },
         bill_status:"Validated"
       }, 
@@ -58,7 +64,7 @@ const getDash = catchAsync(async (req, res, next) => {
     const totalPaid = await billing.findAll({
       attributes: ["id", "bill_amount", "bill_date"], // Fetch only required fields
       where: {
-        ...whereClause,
+        ...whereBillClause,
         bill_date: { [Op.between]: [start_date, end_date] },
         bill_status:"Paid"
       }, 
