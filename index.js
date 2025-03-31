@@ -21,11 +21,12 @@ const dashRouter = require('./route/dashRoute');
 const catchAsync = require("./utils/catchAsync");
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controller/errorController");
+const { insertAction } = require("./controller/auditController");
 
 //middleware
 app.use(express.json());
  app.use(cors());
-
+ app.use(insertAction)
 
 //routes
 app.use('/api/v1/auth', authRouter)
@@ -50,6 +51,7 @@ app.use("*", catchAsync( async (req, res, next)=>{
 }))
 
 app.use(globalErrorHandler);
+
 
 
 const Port = process.env.APP_PORT || 4000
